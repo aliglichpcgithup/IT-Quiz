@@ -16,6 +16,21 @@
         #q-txt { font-size: 1.2rem; margin-bottom: 25px; min-height: 60px; line-height: 1.4; }
         .stat { font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .res-val { font-size: 4rem; font-weight: bold; color: var(--p); }
+        .score-display { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 10px;
+        }
+        .current-score { 
+            font-size: 1.1rem; 
+            color: var(--p); 
+            font-weight: bold;
+            background: rgba(0, 210, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -28,7 +43,10 @@
     </div>
 
     <div id="scr-quiz" class="hidden">
-        <div class="stat" id="meta">Вопрос 1</div>
+        <div class="score-display">
+            <div class="stat" id="meta">Вопрос 1</div>
+            <div class="current-score">Баллы: <span id="score-count">0</span></div>
+        </div>
         <div class="bar-bg"><div id="fill"></div></div>
         <div id="q-txt">Загрузка...</div>
         <div id="opts"></div>
@@ -156,17 +174,26 @@ function start() {
     show();
 }
 
+function updateScore() {
+    document.getElementById('score-count').innerText = score;
+}
+
 function show() {
     const d = qs[cur];
     document.getElementById('meta').innerText = `Вопрос ${cur + 1} из 100`;
     document.getElementById('fill').style.width = (cur / 100 * 100) + "%";
     document.getElementById('q-txt').innerText = d.q;
+    updateScore();
+    
     const b = document.getElementById('opts'); b.innerHTML = '';
     d.a.forEach((t, i) => {
         const btn = document.createElement('button');
         btn.className = 'btn'; btn.innerText = t;
         btn.onclick = () => {
-            if(i === d.c) score++;
+            if(i === d.c) {
+                score++;
+                updateScore();
+            }
             cur++;
             if(cur < 100) show(); else fin();
         };
